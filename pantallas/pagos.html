@@ -1,0 +1,391 @@
+<!DOCTYPE html html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pagos - Sonido 57</title>
+    <style>
+        /* --- Código CSS base (reutilizado) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
+            text-align: center;
+             /* Ajustar padding para el botón fijo de regresar */
+            padding-top: 60px;
+            padding-left: 60px;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Contenedor principal (reutilizado) */
+        .login-container {
+            background-color: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 900px; /* Ancho ajustado para la tabla de pagos */
+            max-width: 95%;
+            box-sizing: border-box;
+            text-align: left; /* Alineamos el contenido a la izquierda */
+             /* Altura máxima y scroll si hay muchos elementos */
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        /* Estilo para el título de la pantalla */
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420;
+            font-size: 28px;
+            font-weight: light;
+            text-align: center; /* Centramos el título */
+        }
+
+        /* Estilo para subtítulos dentro del contenedor */
+        h2 {
+             color: #f0c420;
+             font-size: 20px;
+             margin-top: 30px;
+             margin-bottom: 20px;
+             border-bottom: 1px solid #f0c420;
+             padding-bottom: 10px;
+        }
+
+
+        /* --- Estilos para la tabla de pagos --- */
+        #paymentsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px; /* Espacio después del subtítulo */
+            color: #cccccc;
+        }
+
+        #paymentsTable th,
+        #paymentsTable td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444444;
+        }
+
+        #paymentsTable th {
+            background-color: #1a1a1a;
+            color: #f0c420;
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+
+        /* Estilo opcional para filas alternas */
+        #paymentsTable tbody tr:nth-child(even) {
+            background-color: rgba(30, 30, 30, 0.5);
+        }
+
+         /* Estilo para la columna de estado */
+         #paymentsTable td .payment-status {
+             display: inline-block;
+             padding: 4px 8px;
+             border-radius: 4px;
+             font-size: 11px;
+             font-weight: bold;
+             text-transform: uppercase;
+         }
+
+         #paymentsTable td .payment-status.pending {
+             background-color: #f0c420; /* Amarillo */
+             color: #1a1a1a;
+         }
+         #paymentsTable td .payment-status.paid {
+             background-color: #5cb85c; /* Verde */
+             color: white;
+         }
+          #paymentsTable td .payment-status.cancelled {
+             background-color: #dc3545; /* Rojo */
+             color: white;
+         }
+
+
+        /* Estilo para los botones de acción en la tabla */
+        #paymentsTable td .action-buttons button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Estilo para el botón "Verificar Pago" */
+        #paymentsTable td .action-buttons .verify-button {
+             background-color: #28a745; /* Verde */
+             color: white;
+        }
+
+        #paymentsTable td .action-buttons .verify-button:hover {
+             background-color: #218838;
+        }
+
+         /* Opcional: Estilo para botón de "Ver Detalles" */
+         #paymentsTable td .action-buttons .details-button {
+             background-color: #007bff; /* Azul */
+             color: white;
+             margin-right: 5px;
+         }
+          #paymentsTable td .action-buttons .details-button:hover {
+             background-color: #0056b3;
+         }
+
+
+        /* Mensaje si no hay pagos pendientes */
+        .no-payments-message {
+            color: #cccccc;
+            font-size: 1.1em;
+            text-align: center;
+            margin-top: 20px;
+            display: none; /* Oculto por defecto */
+        }
+
+
+        /* --- Estilo para el botón "Regresar" fijo (reutilizado) --- */
+         .fixed-back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #555555;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            z-index: 1000;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .fixed-back-button:hover {
+        background-color: #777777;
+        opacity: 0.9;
+        }
+
+        /* Media query básico para ajustar en pantallas pequeñas */
+        @media (max-width: 950px) { /* Ajuste el breakpoint para la tabla */
+        .login-container {
+                 width: 98%; /* Permite que ocupe casi todo el ancho */
+                 padding: 20px; /* Reduce padding en móvil */
+             }
+            .fixed-back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            body {
+            padding-top: 40px;
+            padding-left: 40px; /* Ajusta padding del body */
+            }
+            /* Opcional: Estilos para hacer la tabla más usable en móviles (ej. ocultar columnas menos importantes) */
+             /* Esto requeriría más CSS y quizás JS */
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <button type="button" class="fixed-back-button" onclick="window.location.href='admin_panel.html'">
+        Regresar
+    </button>
+
+    <div class="login-container"> <h1>Gestión de Pagos</h1>
+
+        <h2>Pagos Pendientes de Verificación</h2>
+
+        <table id="paymentsTable">
+            <thead>
+                <tr>
+                    <th>Factura #</th>
+                    <th>Evento</th>
+                    <th>Usuario</th>
+                    <th>Monto</th>
+                    <th>Fecha Emitida</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7" style="text-align: center;">Cargando pagos pendientes...</td>
+                </tr>
+                 </tbody>
+        </table>
+
+        <div class="no-payments-message">No hay pagos pendientes de verificación.</div>
+
+    </div>
+
+     <script>
+         document.addEventListener('DOMContentLoaded', function() {
+             const paymentsTableBody = document.querySelector('#paymentsTable tbody');
+             const noPaymentsMessage = document.querySelector('.no-payments-message');
+
+             // --- Función para cargar y mostrar los pagos pendientes ---
+             function loadPendingPayments() {
+                 console.log('Cargando pagos pendientes...'); // Placeholder
+                 paymentsTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Cargando pagos pendientes...</td></tr>'; // Mensaje de carga
+                 noPaymentsMessage.style.display = 'none'; // Ocultar mensaje "no hay pagos"
+
+                 // En una aplicación real, harías un fetch GET a tu API
+                 // para obtener facturas con status 'pending', posiblemente uniendo con event y users
+                 /*
+                 fetch('/admin/api/pending-payments') // Reemplaza con la URL de tu API
+                      .then(response => response.json())
+                      .then(invoices => displayPayments(invoices))
+                      .catch(error => {
+                          console.error('Error al cargar pagos:', error);
+                          paymentsTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Error al cargar los pagos.</td></tr>';
+                           noPaymentsMessage.style.display = 'none';
+                      });
+                 */
+
+                 // --- SIMULACIÓN DE DATOS (Reemplazar con fetch real) ---
+                 // Estos serían facturas con estado 'pending'
+                 const pagosDeEjemplo = [
+                      {
+                           id: 1,
+                           invoice_number: 'INV00123',
+                           event_name: 'Conferencia Anual Tech', // Se obtendría del join con event
+                           user_name: 'Juan Pérez', // Se obtendría del join con users
+                           total_amount: 1500.00,
+                           issue_date: '2024-11-15',
+                           status: 'pending'
+                      },
+                       {
+                           id: 2,
+                           invoice_number: 'INV00124',
+                           event_name: 'Taller de Fotografía',
+                           user_name: 'María García',
+                           total_amount: 250.50,
+                           issue_date: '2024-11-18',
+                           status: 'pending'
+                      },
+                       // Añade más pagos pendientes de ejemplo
+                 ];
+                 displayPayments(pagosDeEjemplo);
+                 // --- FIN SIMULACIÓN ---
+
+             }
+
+             // --- Función para renderizar la tabla ---
+             function displayPayments(invoices) {
+                 paymentsTableBody.innerHTML = ''; // Limpiar contenido actual
+
+                 if (!invoices || invoices.length === 0) {
+                     noPaymentsMessage.style.display = 'block'; // Mostrar mensaje si no hay pagos
+                 } else {
+                     noPaymentsMessage.style.display = 'none'; // Ocultar mensaje si hay pagos
+
+                     invoices.forEach(invoice => {
+                         const row = paymentsTableBody.insertRow();
+                         
+                         // Determinar texto y clase del estado
+                         let statusText = 'Desconocido';
+                         let statusClass = invoice.status ? invoice.status.toLowerCase() : 'unknown';
+                         if (invoice.status === 'pending') statusText = 'Pendiente';
+                         else if (invoice.status === 'paid') statusText = 'Pagado';
+                         else if (invoice.status === 'cancelled') statusText = 'Cancelado';
+
+                         row.innerHTML = `
+                             <td>${invoice.invoice_number}</td>
+                             <td>${invoice.event_name || 'N/A'}</td>
+                             <td>${invoice.user_name || 'N/A'}</td>
+                             <td>$ ${invoice.total_amount ? invoice.total_amount.toFixed(2) : '0.00'}</td>
+                             <td>${invoice.issue_date || 'N/A'}</td>
+                             <td><span class="payment-status ${statusClass}">${statusText}</span></td>
+                             <td>
+                                 <div class="action-buttons">
+                                     ${invoice.status === 'pending' ? 
+                                        `<button class="verify-button" data-invoice-id="${invoice.id}">Verificar Pago</button>` 
+                                        : '' /* Si no está pendiente, no mostrar el botón */
+                                     }
+                                 </div>
+                             </td>
+                         `;
+                     });
+                 }
+             }
+
+             // --- Manejar clics en el botón "Verificar Pago" (delegación) ---
+             paymentsTableBody.addEventListener('click', function(event) {
+                 const target = event.target;
+                 // Verificamos si el clic fue en un botón con la clase y el atributo data-invoice-id
+                 if (target.classList.contains('verify-button') && target.dataset.invoiceId) {
+                     const invoiceId = target.dataset.invoiceId;
+                     console.log('Verificar pago para Factura ID:', invoiceId);
+
+                     if (confirm('¿Estás seguro de que el pago para esta factura ha sido verificado?')) {
+                          // Aquí harías un fetch PUT o POST a tu API para actualizar el estado de la factura a 'paid'
+                          // y la API debería actualizar el estado del evento asociado (ej. a 'confirmed')
+
+                          /*
+                          fetch(`/admin/api/invoices/${invoiceId}/verify`, {
+                              method: 'PUT', // O POST
+                              headers: {
+                                  'Content-Type': 'application/json',
+                                   // Añadir cabeceras de autenticación si son necesarias
+                              },
+                              // Si necesitas enviar datos adicionales, añádelos en el body
+                              // body: JSON.stringify({ verification_status: 'verified', verified_by: 'admin_user_id' })
+                          })
+                          .then(response => {
+                               if (!response.ok) {
+                                   return response.json().then(err => { throw new Error(err.message || 'Error al verificar pago'); });
+                               }
+                               return {}; // Asumimos éxito
+                          })
+                          .then(() => {
+                              console.log('Pago verificado para Factura ID:', invoiceId);
+                              // Opcional: Mostrar un mensaje de éxito temporal
+                              // Recargar la lista de pagos pendientes para reflejar el cambio
+                              loadPendingPayments();
+                          })
+                          .catch(error => {
+                              console.error('Error al verificar pago:', error);
+                              // Opcional: Mostrar un mensaje de error al usuario
+                              alert(`Error al verificar pago: ${error.message}`);
+                          });
+                          */
+
+                          // --- SIMULACIÓN DE ACTUALIZACIÓN (Reemplazar con fetch real) ---
+                          console.log('Simulando verificación para Factura ID:', invoiceId);
+                          alert(`Pago para factura ${invoiceId} marcado como verificado (Simulado). La lista se recargará.`);
+                          // En la simulación, simplemente recargamos para que "desaparezca" de la lista de pendientes
+                          loadPendingPayments();
+                          // --- FIN SIMULACIÓN ---
+                     }
+                 }
+             });
+
+
+             // Cargar los pagos pendientes al iniciar la página
+             loadPendingPayments();
+         });
+     </script>
+
+</body>
+</html>

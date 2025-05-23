@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Eventos - Sonido 57</title>
+    <style>
+        /* --- Código CSS base (reutilizado) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
+            text-align: center;
+             /* Ajustar padding para el botón fijo de regresar */
+            padding-top: 60px;
+            padding-left: 60px;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Contenedor principal (reutilizado) */
+        .login-container {
+            background-color: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 500px; /* Ancho ajustado para la lista de eventos */
+            max-width: 90%;
+            box-sizing: border-box;
+            text-align: left; /* Alineamos el contenido a la izquierda */
+             /* Altura máxima y scroll si hay muchos elementos */
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        /* Estilo para el título de la pantalla */
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420;
+            font-size: 28px;
+            font-weight: light;
+            text-align: center; /* Centramos el título */
+        }
+
+        /* --- Estilos para la lista de eventos --- */
+        #eventListContainer {
+            margin-top: 20px; /* Espacio después del título */
+            /* Este contenedor se llenará dinámicamente */
+        }
+
+        /* Estilo para cada tarjeta de evento individual (reutilizado) */
+        .event-card {
+            background-color: rgba(30, 30, 30, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px; /* Espacio entre tarjetas */
+            text-align: left;
+            border: 1px solid #444444;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Estilo para los párrafos dentro de los detalles del evento (reutilizado) */
+        .event-card .event-details p {
+            margin: 8px 0;
+            color: #cccccc;
+            font-size: 15px;
+            word-wrap: break-word;
+        }
+
+        /* Estilo para las etiquetas fuertes (reutilizado) */
+        .event-card .event-details p strong {
+            color: #f0c420;
+            display: inline-block;
+            min-width: 120px; /* Ancho un poco mayor para etiquetas */
+            margin-right: 10px;
+            vertical-align: top;
+        }
+
+        /* Estilo para el indicador de estado (reutilizado) */
+        .event-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1;
+        }
+
+        .event-status.planned,
+        .event-status.pending { /* Usamos planned o pending para eventos por realizar */
+            background-color: #f0c420; /* Amarillo */
+            color: #1a1a1a;
+        }
+
+        .event-status.confirmed {
+            background-color: #5cb85c; /* Verde */
+            color: white;
+        }
+
+         .event-status.completed { /* Nuevo estilo para estado "Realizado" */
+            background-color: #555555; /* Gris oscuro */
+            color: #ffffff;
+        }
+
+
+        /* --- Estilo para el botón "Evento Realizado" --- */
+        .mark-completed-button {
+            display: block; /* Ocupa su propia línea */
+            width: fit-content; /* Ancho ajustado al contenido */
+            margin: 15px 0 0 auto; /* Margen superior y alineado a la derecha */
+            padding: 8px 15px;
+            background-color: #007bff; /* Azul - puedes elegir otro color */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .mark-completed-button:hover {
+            background-color: #0056b3;
+            opacity: 0.9;
+        }
+        
+         /* Ocultar el botón "Evento Realizado" si el evento ya está completado */
+         .event-status.completed + .mark-completed-button {
+             display: none;
+         }
+
+
+        /* Estilo para el mensaje "No hay eventos" (reutilizado) */
+        .no-events-message {
+            color: #cccccc;
+            font-size: 1.1em;
+            text-align: center;
+            margin-top: 20px;
+            display: none; /* Oculto por defecto */
+        }
+
+        /* --- Estilo para el botón "Regresar" fijo (reutilizado) --- */
+         .fixed-back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #555555;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            z-index: 1000;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+         }
+    
+        .fixed-back-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+        /* Media query básico para ajustar en pantallas pequeñas */
+            @media (max-width: 600px) {
+            .login-container {
+                 width: 95%;
+             }
+            .fixed-back-button {
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        body {
+        padding-top: 40px;
+        padding-left: 40px;
+        }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <button type="button" class="fixed-back-button" onclick="window.location.href='admin_panel.html'">
+        Regresar
+    </button>
+
+    <div class="login-container"> <h1>Gestión de Eventos</h1>
+
+        <div id="eventListContainer">

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Inventario - Sonido 57</title>
+    <style>
+        /* --- Código CSS base (reutilizado) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
+            text-align: center;
+             /* Ajustar padding para el botón fijo de regresar */
+            padding-top: 60px;
+            padding-left: 60px;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Contenedor principal (reutilizado) */
+        .login-container {
+            background-color: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 800px; /* Aumentamos el ancho para la tabla de inventario */
+            max-width: 95%; /* Ajuste responsivo */
+            box-sizing: border-box;
+            text-align: left; /* Alineamos el contenido a la izquierda */
+             /* Altura máxima y scroll si hay muchos elementos */
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        /* Estilo para el título de la pantalla */
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420;
+            font-size: 28px;
+            font-weight: light;
+            text-align: center; /* Centramos el título */
+        }
+
+        /* Estilo para subtítulos dentro del contenedor */
+        h2 {
+             color: #f0c420;
+             font-size: 20px;
+             margin-top: 30px;
+             margin-bottom: 20px;
+             border-bottom: 1px solid #f0c420;
+             padding-bottom: 10px;
+        }
+
+        /* --- Estilos para el formulario de agregar/modificar equipos --- */
+        #inventoryForm .input-group {
+             margin-bottom: 20px;
+             /* Flexbox para layout en pantallas más grandes */
+             display: flex;
+             flex-wrap: wrap;
+             gap: 20px;
+        }
+        
+        #inventoryForm .input-group > div {
+            flex-grow: 1; /* Permite que los input-group internos crezcan */
+             flex-basis: 200px; /* Base mínima antes de crecer */
+        }
+
+        #inventoryForm .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        #inventoryForm .input-group input[type="text"],
+        #inventoryForm .input-group input[type="number"],
+        #inventoryForm .input-group select, /* Añadimos estilo para el select */
+        #inventoryForm .input-group textarea { /* Añadimos estilo para el textarea */
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555555;
+            border-radius: 4px;
+            background-color: #333333;
+            color: #ffffff;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+         #inventoryForm .input-group textarea {
+             resize: vertical; /* Permite redimensionar solo verticalmente */
+             min-height: 80px;
+         }
+
+        #inventoryForm .input-group input:focus,
+        #inventoryForm .input-group select:focus,
+        #inventoryForm .input-group textarea:focus {
+            outline: none;
+            border-color: #f0c420;
+            box-shadow: 0 0 5px rgba(240, 196, 32, 0.5);
+        }
+
+        /* Estilo específico para el campo de descripción si ocupa toda la fila */
+        #inventoryForm .full-width-group {
+             flex-basis: 100%; /* Ocupa todo el ancho de la fila flex */
+        }
+
+
+        /* Estilo del botón de envío del formulario */
+         #inventoryForm button[type="submit"] {
+            display: block; /* Ocupa su propia línea */
+            margin: 20px auto 0 auto; /* Margen superior y centrado */
+            padding: 12px 30px;
+            background-color: #5cb85c; /* Un verde para 'Agregar' */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        #inventoryForm button[type="submit"]:hover {
+             background-color: #4cae4c;
+             opacity: 0.9;
+        }
+
+        /* Estilo para el mensaje de error/éxito del formulario */
+        #formMessageArea {
+            margin-top: 15px;
+            font-size: 14px;
+            color: red;
+            min-height: 1em;
+            text-align: center;
+        }
+         #formMessageArea.success { color: green; }
+         #formMessageArea.error { color: red; }
+
+
+        /* --- Estilos para la tabla de inventario --- */
+        #inventoryTable {
+            width: 100%;
+            border-collapse: collapse; /* Elimina el espacio entre bordes de celda */
+            margin-top: 30px;
+            color: #cccccc; /* Color de texto general de la tabla */
+        }
+
+        #inventoryTable th,
+        #inventoryTable td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444444; /* Línea divisoria */
+        }
+
+        #inventoryTable th {
+            background-color: #1a1a1a; /* Fondo oscuro para encabezados */
+            color: #f0c420; /* Texto amarillo en encabezados */
+            font-size: 15px;
+            text-transform: uppercase;
+        }
+
+        /* Estilo opcional para filas alternas */
+        #inventoryTable tbody tr:nth-child(even) {
+            background-color: rgba(30, 30, 30, 0.5);
+        }
+
+        #inventoryTable td .action-buttons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        #inventoryTable td .action-buttons .edit-button {
+             background-color: #f0c420; /* Amarillo para Editar */
+             color: #1a1a1a;
+        }
+
+        #inventoryTable td .action-buttons .edit-button:hover {
+             background-color: #ffdb4f;
+        }
+
+        #inventoryTable td .action-buttons .delete-button {
+             background-color: #dc3545; /* Rojo para Eliminar */
+             color: white;
+        }
+
+        #inventoryTable td .action-buttons .delete-button:hover {
+             background-color: #c82333;
+        }
+
+
+        /* --- Estilo para el botón "Regresar" fijo --- */
+         .fixed-back-button {
+         position: fixed;
+        top: 20px;
+        left: 20px;
+        padding: 10px 15px;
+        background-color: #555555;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        text-transform: uppercase;
+        font-weight: bold;
+        z-index: 1000;
+        transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .fixed-back-button:hover {
+        background-color: #777777;
+        opacity: 0.9;
+        }
+
+        /* Media query básico para ajustar en pantallas pequeñas */    
+        @media (max-width: 850px) { /* Ajuste el breakpoint para que la tabla se vea bien */
+            .login-container {
+                 width: 95%; /* Permite que ocupe más ancho en pantallas medianas/pequeñas si es necesario */
+             }
+            .fixed-back-button {
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+            }
+        body {
+            padding-top: 40px;
+            padding-left: 40px;
+            }
+             /* En pantallas pequeñas, apilar campos del formulario si es necesario */
+             #inventoryForm .input-group {
+                flex-direction: column;
+                gap: 0;
+             }
+             #inventoryForm .input-group > div {
+                flex-basis: auto;
+             }
+             #inventoryForm .input-group > div:not(:last-child) {
+                 margin-bottom: 20px;
+             }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <button type="button" class="fixed-back-button" onclick="window.location.href='admin_panel.html'">
+        Regresar
+    </button>
+
+    <div class="login-container"> <h1>Gestión de Inventario</h1>
+
+        <h2>Agregar Nuevo Equipo</h2>
+        <form id="inventoryForm" action="/admin/api/resources" method="POST">
+            <input type="hidden" id="resourceId" name="resource_id" value="">
+
+            <div class="input-group">
+                 <div>
+                    <label for="name">Nombre del Equipo:</label>
+                    <input type="text" id="name" name="name" required>
+                 </div>
+                 <div>
+                    <label for="type">Tipo:</label>
+                    <input type="text" id="type" name="type" required>
+                 </div>
+            </div>
+
+             <div class="input-group">
+                 <div>
+                    <label for="unit_cost">Costo Unitario:</label>
+                    <input type="number" id="unit_cost" name="unit_cost" required step="0.01" min="0">
+                 </div>
+                 <div>
+                    <label for="unit_measure">Unidad de Medida:</label>
+                     <input type="text" id="unit_measure" name="unit_measure" required>
+                 </div>
+                 <div>
+                    <label for="stock_quantity">Cantidad en Stock:</label>
+                    <input type="number" id="stock_quantity" name="stock_quantity" required min="0">
+                 </div>
+            </div>
+
+            <div class="input-group full-width-group">
+                 <div>
+                    <label for="description">Descripción:</label>
+                    <textarea id="description" name="description"></textarea>
+                 </div>
+            </div>
+
+            <button type="submit">Agregar Equipo</button>
+             <div id="formMessageArea"></div>
+
+        </form>
+
+        <h2>Inventario Actual</h2>
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Stock</th>
+                    <th>Costo Unitario</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="6" style="text-align: center;">Cargando inventario...</td>
+                </tr>
+                 </tbody>
+        </table>
+
+    </div>
+
+     <script>
+         document.addEventListener('DOMContentLoaded', function() {
+             const inventoryForm = document.getElementById('inventoryForm');
+             const inventoryTableBody = document.querySelector('#inventoryTable tbody');
+             const formMessageArea = document.getElementById('formMessageArea');
+             let editingResourceId = null; // Para saber si estamos editando
+
+             // --- Función para cargar y mostrar el inventario ---
+             function loadInventory() {
+                 // En una aplicación real, harías un fetch GET a tu API
+                 console.log('Cargando inventario...'); // Placeholder
+                 inventoryTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Cargando inventario...</td></tr>'; // Mostrar mensaje de carga
+
+                 // --- SIMULACIÓN DE DATOS (Reemplazar con fetch real) ---
+                 const equiposDeEjemplo = [
+                     { id: 1, name: 'Equipo de Sonido Básico', type: 'Audio', stock_quantity: 5, unit_cost: 150.00, unit_measure: 'día', description: 'Ideal para eventos pequeños.' },
+                     { id: 2, name: 'Focos LED Colores', type: 'Iluminación', stock_quantity: 20, unit_cost: 25.00, unit_measure: 'unidad', description: 'Focos LED con cambio de color.' },
+                     { id: 3, name: 'Pantalla Proyector 100"', type: 'Visual', stock_quantity: 3, unit_cost: 100.00, unit_measure: 'día', description: 'Pantalla de proyección con trípode.' },
+                 ];
+                 displayInventory(equiposDeEjemplo);
+                 // --- FIN SIMULACIÓN ---
+
+                 /*
+                 // Ejemplo de fetch real:
+                 fetch('/admin/api/resources')
+                      .then(response => response.json())
+                      .then(equipos => displayInventory(equipos))
+                      .catch(error => {
+                          console.error('Error al cargar inventario:', error);
+                          inventoryTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error al cargar el inventario.</td></tr>';
+                      });
+                 */
+             }
+
+             // --- Función para renderizar la tabla ---
+             function displayInventory(equipos) {
+                 inventoryTableBody.innerHTML = ''; // Limpiar contenido actual
+                 if (equipos.length === 0) {
+                     inventoryTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay equipos en el inventario.</td></tr>';
+                     return;
+                 }
+
+                 equipos.forEach(equipo => {
+                     const row = inventoryTableBody.insertRow();
+                     row.innerHTML = `
+                         <td>${equipo.name}</td>
+                         <td>${equipo.type}</td>
+                         <td>${equipo.stock_quantity}</td>
+                         <td>$ ${equipo.unit_cost.toFixed(2)} / ${equipo.unit_measure}</td>
+                         <td>${equipo.description || ''}</td>
+                         <td>
+                             <div class="action-buttons">
+                                 <button class="edit-button" data-id="${equipo.id}">Editar</button>
+                                 <button class="delete-button" data-id="${equipo.id}">Eliminar</button>
+                             </div>
+                         </td>
+                     `;
+                 });
+             }
+
+             // --- Manejar el envío del formulario (Agregar/Modificar) ---
+             inventoryForm.addEventListener('submit', function(event) {
+                 event.preventDefault(); // Evitar el envío tradicional del formulario
+
+                 const formData = new FormData(inventoryForm);
+                 const resourceData = Object.fromEntries(formData.entries());
+
+                 // Convertir costo y cantidad a números
+                 resourceData.unit_cost = parseFloat(resourceData.unit_cost);
+                 resourceData.stock_quantity = parseInt(resourceData.stock_quantity);
+
+                 const url = editingResourceId ? `/admin/api/resources/${editingResourceId}` : '/admin/api/resources';
+                 const method = editingResourceId ? 'PUT' : 'POST'; // Usar PUT para modificar, POST para agregar
+
+                 // --- SIMULACIÓN DE ENVÍO (Reemplazar con fetch real) ---
+                 console.log(`${editingResourceId ? 'Modificando' : 'Agregando'} equipo:`, resourceData);
+                 formMessageArea.textContent = `${editingResourceId ? 'Modificando' : 'Agregando'} equipo...`;
+                 formMessageArea.className = ''; // Limpiar clases de estado
+
+                 setTimeout(() => { // Simular tiempo de respuesta
+                     console.log('Simulación exitosa');
+                     formMessageArea.textContent = `Equipo ${editingResourceId ? 'modificado' : 'agregado'} con éxito (Simulado).`;
+                     formMessageArea.className = 'success'; // Mostrar éxito
+
+                     inventoryForm.reset(); // Limpiar formulario
+                     editingResourceId = null; // Salir del modo edición
+                     document.getElementById('resourceId').value = '';
+                     inventoryForm.querySelector('button[type="submit"]').textContent = 'Agregar Equipo'; // Restaurar texto del botón
+                     loadInventory(); // Recargar la lista para mostrar el cambio simulado
+                 }, 1000);
+
+                 /*
+                 // Ejemplo de fetch real:
+                 fetch(url, {
+                     method: method,
+                     headers: {
+                         'Content-Type': 'application/json',
+                         // Añadir cabeceras de autenticación si son necesarias
+                     },
+                     body: JSON.stringify(resourceData)
+                 })
+                 .then(response => {
+                      if (!response.ok) {
+                           // Manejar errores específicos de la API (ej. validación)
+                           return response.json().then(err => { throw new Error(err.message || 'Error en la operación'); });
+                       }
+                       return response.json(); // O response.text() si tu API no devuelve JSON
+                 })
+                 .then(result => {
+                     console.log('Operación exitosa:', result);
+                     formMessageArea.textContent = `Equipo ${editingResourceId ? 'modificado' : 'agregado'} con éxito.`;
+                     formMessageArea.className = 'success';
+
+                     inventoryForm.reset();
+                     editingResourceId = null;
+                     document.getElementById('resourceId').value = '';
+                     inventoryForm.querySelector('button[type="submit"]').textContent = 'Agregar Equipo';
+                     loadInventory(); // Recargar la lista para mostrar el cambio
+                 })
+                 .catch(error => {
+                     console.error('Error en la operación:', error);
+                     formMessageArea.textContent = `Error: ${error.message || 'Hubo un problema al procesar la solicitud.'}`;
+                     formMessageArea.className = 'error';
+                 });
+                 */
+             });
+
+             // --- Manejar clics en botones de Editar/Eliminar (delegación de eventos) ---
+             inventoryTableBody.addEventListener('click', function(event) {
+                 const target = event.target;
+                 const resourceId = target.dataset.id; // Obtenemos el ID del atributo data-id
+
+                 if (!resourceId) return; // Salir si no se hizo clic en un botón con data-id
+
+                 if (target.classList.contains('edit-button')) {
+                     console.log('Clic en Editar para ID:', resourceId);
+                     // En una aplicación real, harías un fetch GET para obtener los datos del equipo
+                     // y luego llenarías el formulario para edición.
+                     // --- SIMULACIÓN DE CARGA PARA EDICIÓN ---
+                     const equipoAEditarSimulado = equiposDeEjemplo.find(eq => eq.id == resourceId);
+                     if (equipoAEditarSimulado) {
+                          document.getElementById('resourceId').value = equipoAEditarSimulado.id;
+                          document.getElementById('name').value = equipoAEditarSimulado.name;
+                          document.getElementById('type').value = equipoAEditarSimulado.type;
+                          document.getElementById('unit_cost').value = equipoAEditarSimulado.unit_cost;
+                          document.getElementById('unit_measure').value = equipoAEditarSimulado.unit_measure;
+                          document.getElementById('stock_quantity').value = equipoAEditarSimulado.stock_quantity;
+                          document.getElementById('description').value = equipoAEditarSimulado.description || '';
+
+                          editingResourceId = equipoAEditarSimulado.id; // Establecer ID de edición
+                          inventoryForm.querySelector('button[type="submit"]').textContent = 'Modificar Equipo'; // Cambiar texto del botón
+                          formMessageArea.textContent = 'Editando equipo. Modifica los campos y haz clic en "Modificar Equipo".';
+                           formMessageArea.className = '';
+                           // Puedes desplazarte hacia arriba al formulario si es necesario
+                           inventoryForm.scrollIntoView({ behavior: 'smooth' });
+
+                     } else {
+                         console.error('Equipo no encontrado para edición simulada:', resourceId);
+                     }
+                     // --- FIN SIMULACIÓN ---
+
+                     /*
+                     // Ejemplo de fetch real para edición:
+                     fetch(`/admin/api/resources/${resourceId}`)
+                          .then(response => response.json())
+                          .then(equipo => {
+                              document.getElementById('resourceId').value = equipo.id;
+                              document.getElementById('name').value = equipo.name;
+                              // ... llenar los otros campos ...
+                              editingResourceId = equipo.id;
+                              inventoryForm.querySelector('button[type="submit"]').textContent = 'Modificar Equipo';
+                              formMessageArea.textContent = 'Editando equipo...'; // O un mensaje instructivo
+                              formMessageArea.className = '';
+                              // Desplazarse al formulario
+                              inventoryForm.scrollIntoView({ behavior: 'smooth' });
+                          })
+                          .catch(error => {
+                              console.error('Error al cargar datos para edición:', error);
+                              formMessageArea.textContent = 'Error al cargar datos del equipo para editar.';
+                              formMessageArea.className = 'error';
+                          });
+                     */
+
+                 } else if (target.classList.contains('delete-button')) {
+                     console.log('Clic en Eliminar para ID:', resourceId);
+                     if (confirm('¿Estás seguro de que deseas eliminar este equipo?')) {
+                         // En una aplicación real, harías un fetch DELETE a tu API
+                         console.log('Eliminando equipo con ID:', resourceId);
+                          formMessageArea.textContent = 'Eliminando equipo...';
+                          formMessageArea.className = '';
+
+                         // --- SIMULACIÓN DE ELIMINACIÓN ---
+                         // En la simulación, simplemente recargamos para "refrescar"
+                         setTimeout(() => { // Simular tiempo de respuesta
+                              console.log('Eliminación simulada exitosa');
+                               formMessageArea.textContent = 'Equipo eliminado con éxito (Simulado).';
+                               formMessageArea.className = 'success';
+                               loadInventory(); // Recargar la lista para mostrar el cambio simulado
+                         }, 500);
+                         // --- FIN SIMULACIÓN ---
+
+                         /*
+                         // Ejemplo de fetch real para eliminar:
+                         fetch(`/admin/api/resources/${resourceId}`, {
+                             method: 'DELETE',
+                             // Añadir cabeceras de autenticación si son necesarias
+                         })
+                         .then(response => {
+                              if (!response.ok) {
+                                  return response.json().then(err => { throw new Error(err.message || 'Error al eliminar'); });
+                              }
+                              // Si DELETE no devuelve JSON, ajusta esto:
+                              // return response.status === 204 ? {} : response.json();
+                               return {}; // Asumimos éxito si no hay error en la respuesta
+                         })
+                         .then(() => {
+                             console.log('Equipo eliminado con éxito');
+                             formMessageArea.textContent = 'Equipo eliminado con éxito.';
+                             formMessageArea.className = 'success';
+                             loadInventory(); // Recargar la lista
+                         })
+                         .catch(error => {
+                             console.error('Error al eliminar equipo:', error);
+                             formMessageArea.textContent = `Error al eliminar: ${error.message || 'Hubo un problema.'}`;
+                             formMessageArea.className = 'error';
+                         });
+                         */
+                     }
+                 }
+             });
+
+
+             // Cargar el inventario al iniciar la página
+             loadInventory();
+         });
+     </script>
+
+</body>
+</html>

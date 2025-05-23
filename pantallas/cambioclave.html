@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Contraseña - Sonido 57</title>
+    <style>
+       
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más limpia */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Fondo con gradiente animado - Tomado del diseño de inicio de sesión */
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff; /* Texto blanco */
+            text-align: center;
+        }
+
+        /* Animación del gradiente */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Contenedor principal (similar al login-container) */
+        /* Mantengo el nombre de clase original .login-container para reutilizar el estilo directo */
+        .login-container {
+            background-color: rgba(15, 15, 15, 0.9); /* Fondo oscuro semi-transparente */
+            padding: 40px; /* Más padding para un look más espacioso */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 450px; /* Ancho del contenedor */
+            max-width: 90%; /* Ajuste en pantallas pequeñas */
+            box-sizing: border-box; /* Incluir padding y borde en el ancho */
+        }
+
+        /* Título dentro del contenedor */
+        /* Adaptado para h2 que usamos en la pantalla de cambio de clave */
+        .login-container h2 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420; /* Amarillo */
+            font-size: 24px;
+            font-weight: light; /* Fuente más ligera */
+        }
+
+         /* Estilo para los párrafos de instrucción */
+        .login-container p {
+            margin-bottom: 20px;
+            color: #cccccc; /* Color de texto más suave */
+            font-size: 14px;
+        }
+
+
+        /* Grupo de entrada (etiqueta + input) */
+        /* Adaptado para la clase .form-group que usamos, pero la renombro a .input-group para usar el CSS original */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left; /* Alinear etiquetas a la izquierda */
+        }
+
+        /* Etiqueta de los campos de entrada */
+        .input-group label {
+            display: block; /* Etiquetas en su propia línea */
+            margin-bottom: 8px;
+            color: #cccccc; /* Color de etiqueta más suave */
+            font-size: 14px;
+        }
+
+        /* Campos de entrada (input) */
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555555; /* Borde sutil */
+            border-radius: 4px;
+            background-color: #333333; /* Fondo de input oscuro */
+            color: #ffffff; /* Texto blanco en el input */
+            box-sizing: border-box; /* Incluir padding y borde en el ancho */
+            font-size: 16px;
+        }
+
+        /* Estilo al enfocar un campo de entrada */
+        .input-group input:focus {
+            outline: none;
+            border-color: #f0c420; /* Resaltar con amarillo al enfocar */
+            box-shadow: 0 0 5px rgba(240, 196, 32, 0.5);
+        }
+
+        /* Contenedor del botón (adaptado para un solo botón) */
+         .button-container {
+            /* Flexbox ya no es tan crucial si hay un solo botón principal, pero lo mantenemos */
+            display: flex;
+            justify-content: center; /* Centrar el botón si no ocupa todo el ancho */
+            margin-top: 30px;
+            /* Eliminamos space-between y gap si solo hay un botón principal */
+        }
+
+        /* Estilo general del botón */
+        .button-container button {
+             /* flex-grow ya no es necesario para un solo botón principal */
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            /* Por defecto, el único botón principal tomará el estilo del botón de "Iniciar Sesión" */
+            background-color: #f0c420;
+            color: #1a1a1a;
+             /* Le damos un ancho fijo o porcentual si no queremos que ocupe todo el contenedor flex */
+             width: 100%; /* Ocupar el ancho del contenedor button-container */
+        }
+
+        /* Estilo hover del botón */
+        .button-container button:hover {
+             background-color: #ffdb4f;
+             opacity: 0.9;
+        }
+
+      
+        .forgot-password {
+            display: block; /* Para que esté en su propia línea */
+            margin-top: 20px; /* Espacio encima */
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            text-align: center;
+        }
+
+        .forgot-password:hover {
+            color: #f0c420;
+            text-decoration: underline;
+        }
+
+        /* Estilo para el área de mensajes (errores/éxito) */
+        #message-area {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            min-height: 1.2em; /* Reserva un poco de espacio */
+        }
+        #message-area.error { color: red; }
+        #message-area.success { color: green; }
+
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Cambiar Contraseña</h2>
+        <p>Por favor, ingresa tu nueva contraseña segura.</p>
+
+        <form action="/process-password-reset" method="POST">
+
+            <input type="hidden" id="reset_token" name="reset_token" value="[TOKEN_RECIBIDO_POR_URL]">
+
+            <div class="input-group">
+                <label for="new_password">Nueva Contraseña:</label>
+                <input type="password" id="new_password" name="new_password" required minlength="8">
+            </div>
+
+            <div class="input-group">
+                <label for="confirm_password">Confirmar Contraseña:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required minlength="8">
+            </div>
+
+            <div id="message-area">
+                </div>
+
+            <div class="button-container">
+                 <button type="submit">Actualizar Contraseña</button>
+            </div>
+
+            <a href="login.html" class="forgot-password">Volver a Iniciar Sesión</a>
+
+        </form>
+    </div>
+
+    <script>
+        const form = document.querySelector('form');
+        const newPasswordInput = document.getElementById('new_password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const messageArea = document.getElementById('message-area');
+
+        form.addEventListener('submit', function(event) {
+            if (newPasswordInput.value !== confirmPasswordInput.value) {
+                messageArea.textContent = 'Error: Las contraseñas no coinciden.';
+                messageArea.className = 'error'; // Opcional: para estilos específicos de error
+                event.preventDefault(); // Detiene el envío del formulario
+            } else {
+                messageArea.textContent = ''; // Limpia mensajes si coinciden
+                 messageArea.className = ''; // Limpia clases de estado
+                // La validación de seguridad (largo mínimo, etc.) y el envío al backend ocurrirán aquí
+                // Tu backend manejará la validación del token, la complejidad de la clave y la actualización.
+            }
+        });
+    </script>
+</body>
+</html>

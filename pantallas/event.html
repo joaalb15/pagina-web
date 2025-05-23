@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Evento</title>
+    <style>
+        /* --- Código CSS base --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
+            text-align: center;
+            /* Añadir padding para que el contenido no quede detrás del botón fijo */
+            padding-top: 60px;
+             padding-left: 60px;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .login-container {
+            background-color: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 450px;
+            max-width: 90%;
+            box-sizing: border-box;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420;
+            font-size: 24px;
+            font-weight: light;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="date"],
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555555;
+            border-radius: 4px;
+            background-color: #333333;
+            color: #ffffff;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+         .input-group input[type="date"]::-webkit-calendar-picker-indicator {
+             filter: invert(1);
+             cursor: pointer;
+        }
+         .input-group input[type="date"]::-moz-calendar-picker-indicator {
+             filter: invert(1);
+             cursor: pointer;
+        }
+
+        .input-group input[type="text"]:focus,
+        .input-group input[type="date"]:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #f0c420;
+            box-shadow: 0 0 5px rgba(240, 196, 32, 0.5);
+        }
+
+        .input-group input[disabled] {
+             background-color: #222222;
+             color: #aaaaaa;
+             cursor: not-allowed;
+             border-color: #444444;
+        }
+
+        .select-with-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .select-with-button select {
+            flex-grow: 1;
+            width: auto;
+        }
+
+        .add-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f0c420;
+            color: #1a1a1a;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            line-height: 1;
+            height: 38px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-button:hover {
+            background-color: #ffdb4f;
+            opacity: 0.9;
+        }
+
+        #equiposSeleccionadosContainer .input-group {
+            margin-top: 15px;
+            border-top: 1px solid #222222;
+            padding-top: 15px;
+        }
+
+         /* --- Nuevos estilos para el contenedor del selector + cantidad --- */
+         .selector-quantity-group {
+             display: flex; /* Usa flexbox para poner select y cantidad uno al lado del otro */
+             align-items: center; /* Alinea verticalmente */
+             gap: 10px; /* Espacio entre elementos */
+             margin-top: 10px; /* Espacio debajo de la etiqueta principal de equipo */
+         }
+
+         .selector-quantity-group .equipo-select {
+             flex-grow: 1; /* El selector ocupa la mayor parte del espacio */
+             width: auto; /* Sobrescribe el 100% de ancho del input-group */
+         }
+
+         .selector-quantity-group .quantity-label {
+              display: inline-block; /* Asegura que no ocupe todo el ancho */
+              margin-bottom: 0; /* Elimina el margen de la etiqueta */
+              flex-shrink: 0; /* Evita que la etiqueta se encoja */
+              color: #cccccc; /* Mismo color que otras etiquetas */
+              font-size: 14px;
+         }
+
+         .selector-quantity-group .quantity-input {
+             width: 60px; /* Ancho fijo para el input de cantidad */
+             flex-shrink: 0; /* Evita que se encoja */
+             padding: 10px; /* Mismo padding que otros inputs */
+             border: 1px solid #555555;
+             border-radius: 4px;
+             background-color: #333333;
+             color: #ffffff;
+             box-sizing: border-box;
+             font-size: 16px;
+             text-align: center; /* Centra el número */
+             /* Eliminar las flechas nativas en algunos navegadores */
+             -webkit-appearance: none;
+             margin: 0;
+             -moz-appearance: textfield;
+         }
+
+         .selector-quantity-group .quantity-input:focus {
+             outline: none;
+             border-color: #f0c420;
+             box-shadow: 0 0 5px rgba(240, 196, 32, 0.5);
+         }
+
+
+         .input-group .remove-button {
+            background-color: #e53935;
+            color: white;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+             /* Posicionar en línea con el grupo selector/cantidad */
+            vertical-align: middle;
+            margin-top: 0; /* Eliminar margen si se alinea */
+            transition: background-color 0.3s ease;
+        }
+
+         .input-group .remove-button:hover {
+            background-color: #c62828;
+        }
+
+
+        /* --- Estilos para el contenedor de botones --- */
+        .button-container {
+            display: flex;
+            justify-content: center;
+             gap: 15px;
+            margin-top: 30px;
+        }
+
+        .button-container button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-sizing: border-box;
+            min-width: 180px;
+            display: inline-block;
+        }
+
+        .button-container .secondary-button {
+            background-color: #555555;
+            color: #ffffff;
+        }
+
+        .button-container .secondary-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+        .button-container .primary-button {
+            background-color: #f0c420;
+            color: #1a1a1a;
+        }
+
+        .button-container .primary-button:hover {
+            background-color: #ffdb4f;
+            opacity: 0.9;
+        }
+
+        /* --- Estilo para el botón "Regresar" fijo --- */
+         .fixed-back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #555555;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            z-index: 1000;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .fixed-back-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+        /* Media query básico para ajustar en pantallas pequeñas */
+        @media (max-width: 600px) {
+            .fixed-back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+             body {
+                padding-top: 40px;
+                 padding-left: 40px;
+            }
+             .selector-quantity-group {
+                flex-direction: column; /* Apila select y cantidad en pantallas pequeñas */
+                align-items: flex-start; /* Alinea a la izquierda cuando está apilado */
+             }
+             .selector-quantity-group select,
+             .selector-quantity-group .quantity-input {
+                 width: 100%; /* Ocupa todo el ancho disponible cuando está apilado */
+                 min-width: auto;
+             }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <button type="button" class="fixed-back-button" onclick="window.location.href='main.html'">
+        Regresar
+    </button>
+
+    <div class="login-container">
+        <h1>Agendar Evento</h1>
+
+        <form id="eventoForm" action="#" method="post">
+            <div class="input-group">
+                <label for="tipoEvento">Tipo de Evento:</label>
+                <select id="tipoEvento" name="tipoEvento" required>
+                    <option value="">-- Seleccione un tipo --</option>
+                    <option value="reunion">Reunión</option>
+                    <option value="conferencia">Conferencia</option>
+                    <option value="taller">Taller</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="fechaInicio">Fecha de Inicio:</label>
+                <input type="date" id="fechaInicio" name="fechaInicio" required>
+            </div>
+
+            <div class="input-group">
+                <label for="fechaFin">Fecha de Fin:</label>
+                <input type="date" id="fechaFin" name="fechaFin" required>
+            </div>
+
+             <div class="input-group">
+                <label for="localizacion">Localización:</label>
+                <input type="text" id="localizacion" name="localizacion" placeholder="Ej: Sala de reuniones A" required>
+            </div>
+
+            <div class="input-group">
+                <label for="tipoEquipoSelect">Añadir Tipo de Equipo:</label>
+                <div class="select-with-button">
+                    <select id="tipoEquipoSelect">
+                        <option value="">-- Seleccione un tipo de equipo --</option>
+                        <option value="sonido">Sonido</option>
+                        <option value="iluminacion">Iluminación</option>
+                        <option value="pantalla">Pantalla</option>
+                    </select>
+                    <button type="button" id="addEquipoBtn" class="add-button">+</button>
+                </div>
+            </div>
+
+            <div id="equiposSeleccionadosContainer">
+                </div>
+
+            <div class="input-group">
+                <label for="costoTotal">Costo Total (Estimado):</label>
+                <input type="text" id="costoTotal" name="costoTotal" value="$ 0.00" disabled>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="primary-button">Proceder al Pago</button>
+            </div>
+        </form>
+
+    </div>
+
+    <script>
+        // --- Código JavaScript ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoEquipoSelect = document.getElementById('tipoEquipoSelect');
+            const addEquipoBtn = document.getElementById('addEquipoBtn');
+            const equiposSeleccionadosContainer = document.getElementById('equiposSeleccionadosContainer');
+            const costoTotalInput = document.getElementById('costoTotal'); // Referencia al campo de costo
+             // addedEquipmentTypes rastrea qué TIPOS de equipo se han añadido (Sonido, Iluminación, etc.)
+            const addedEquipmentTypes = new Set();
+
+            // --- SIMULACIÓN DE DATOS DE LA BASE DE DATOS PARA EQUIPOS ---
+            const simulatedDatabase = {
+                sonido: [
+                    { id: 's-m-001', name: 'Mezcladora Behringer', costPerUnit: 100 }, // Añadir costo por unidad simulado
+                    { id: 's-m-002', name: 'Micrófono Shure SM58', costPerUnit: 50 },
+                    { id: 's-s-003', name: 'Altavoz JBL 15"', costPerUnit: 120 },
+                    { id: 's-m-004', name: 'Micrófono inalámbrico Sennheiser', costPerUnit: 80 }
+                ],
+                iluminacion: [
+                    { id: 'i-p-001', name: 'Foco Par LED RGBW', costPerUnit: 30 },
+                    { id: 'i-s-002', name: 'Luz Spot Móvil', costPerUnit: 70 },
+                    { id: 'i-b-003', name: 'Cabeza de Haz (Beam)', costPerUnit: 150 }
+                ],
+                pantalla: [
+                    { id: 'p-p-001', name: 'Proyector EPSON HD', costPerUnit: 200 },
+                    { id: 'p-l-002', name: 'Pantalla LED 50"', costPerUnit: 180 },
+                    { id: 'p-p-003', name: 'Pantalla de proyección retráctil', costPerUnit: 60 }
+                ]
+            };
+             // --- SIMULACIÓN DE COSTOS BASE POR TIPO DE EVENTO ---
+            const simulatedBaseEventCosts = {
+                reunion: 100,
+                conferencia: 500,
+                taller: 200,
+                otro: 150
+            };
+            // --- FIN SIMULACIONES DE DATOS/COSTOS ---
+
+
+            // Lógica existente para añadir selectores de equipo
+            addEquipoBtn.addEventListener('click', function() {
+                const selectedOption = tipoEquipoSelect.options[tipoEquipoSelect.selectedIndex];
+                const tipoValue = selectedOption.value; // 'sonido', 'iluminacion', 'pantalla'
+                const tipoText = selectedOption.text; // 'Sonido', 'Iluminación', 'Pantalla'
+
+                // Verificar si se seleccionó un tipo válido y si NO se ha añadido ya el SELECTOR para este tipo
+                if (tipoValue && !addedEquipmentTypes.has(tipoValue)) {
+
+                    // --- SIMULACIÓN: Obtener datos del tipo seleccionado ---
+                    const recursosDelTipo = simulatedDatabase[tipoValue] || [];
+
+                    if (recursosDelTipo.length === 0) {
+                         alert(`No hay recursos de tipo '${tipoText}' disponibles.`);
+                         tipoEquipoSelect.selectedIndex = 0;
+                         return;
+                    }
+                    // --- FIN SIMULACIÓN ---
+
+
+                    // Crear el nuevo grupo principal (input-group)
+                    const newGroup = document.createElement('div');
+                    newGroup.classList.add('input-group');
+                    // Añadir clases y atributos para rastrear el tipo y facilitar selección/eliminación
+                    newGroup.classList.add('equipo-selector-group'); // Clase general para grupos dinámicos
+                    newGroup.classList.add('equipo-selector-' + tipoValue); // Clase específica por tipo
+                    newGroup.dataset.tipo = tipoValue; // Guardar el tipo en un data attribute
+
+                    // Crear la etiqueta principal para el tipo de equipo (ej: Seleccionar Sonido:)
+                    const mainLabel = document.createElement('label');
+                    mainLabel.textContent = `Seleccionar ${tipoText}:`;
+                    // Asignar un 'for' que coincida con el ID del select que crearemos
+                    mainLabel.setAttribute('for', `selectorEquipo-${tipoValue}`);
+                    newGroup.appendChild(mainLabel); // Añadir la etiqueta principal al grupo
+
+
+                    // Crear el contenedor flex para el selector y la cantidad
+                    const selectorQuantityGroup = document.createElement('div');
+                    selectorQuantityGroup.classList.add('selector-quantity-group');
+                    newGroup.appendChild(selectorQuantityGroup); // Añadir el contenedor flex al grupo principal
+
+
+                    // Crear el nuevo elemento select (selector de equipo específico)
+                    const newSelect = document.createElement('select');
+                    newSelect.name = `equipo-${tipoValue}`; // Nombre para el envío del formulario
+                    newSelect.id = `selectorEquipo-${tipoValue}`; // ID para la etiqueta
+                    newSelect.required = true; // Haz la selección de equipo específico requerida
+                    newSelect.classList.add('equipo-select'); // Clase para estilos flex
+
+                    // Añadir una opción por defecto (placeholder) al select
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = "";
+                    defaultOption.textContent = `-- Seleccione un ${tipoText} --`;
+                    newSelect.appendChild(defaultOption);
+
+                    // Llenar el selector con los recursos obtenidos (simulados)
+                    recursosDelTipo.forEach(recurso => {
+                        const option = document.createElement('option');
+                        option.value = recurso.id; // Valor a enviar (ID del recurso)
+                        option.textContent = recurso.name; // Texto a mostrar
+                         // Opcional: guardar el costo por unidad en un data attribute en la opción
+                         option.dataset.costPerUnit = recurso.costPerUnit;
+                        newSelect.appendChild(option);
+                    });
+
+                    // Añadir el selector al contenedor flex
+                    selectorQuantityGroup.appendChild(newSelect);
+
+                    // Crear la etiqueta para la cantidad
+                    const quantityLabel = document.createElement('label');
+                    quantityLabel.textContent = 'Cantidad:';
+                    quantityLabel.setAttribute('for', `cantidad-${tipoValue}`);
+                    quantityLabel.classList.add('quantity-label'); // Clase para estilos flex
+                    // Añadir la etiqueta de cantidad al contenedor flex
+                    selectorQuantityGroup.appendChild(quantityLabel);
+
+
+                    // Crear el input para la cantidad
+                    const quantityInput = document.createElement('input');
+                    quantityInput.type = 'number'; // Tipo número
+                    quantityInput.name = `cantidad-${tipoValue}`; // Nombre para el envío
+                    quantityInput.id = `cantidad-${tipoValue}`; // ID para la etiqueta
+                    quantityInput.value = 1; // Valor inicial por defecto
+                    quantityInput.min = 1; // Cantidad mínima
+                    quantityInput.required = true; // Haz la cantidad requerida
+                    quantityInput.classList.add('quantity-input'); // Clase para estilos flex
+                    // Añadir el input de cantidad al contenedor flex
+                    selectorQuantityGroup.appendChild(quantityInput);
+
+                     // --- Evento para recalcular costo cuando cambie la selección de equipo o la cantidad ---
+                     newSelect.addEventListener('change', updateEstimatedCostDisplay);
+                     quantityInput.addEventListener('input', updateEstimatedCostDisplay); // input para cambios en tiempo real
+
+
+                    // Crear el botón de eliminar
+                     const removeButton = document.createElement('button');
+                     removeButton.type = 'button';
+                     removeButton.classList.add('remove-button');
+                     removeButton.textContent = 'Eliminar';
+                     removeButton.addEventListener('click', function() {
+                         // Eliminar el grupo completo (label + selector-quantity-group + button)
+                         equiposSeleccionadosContainer.removeChild(newGroup);
+                         // Permitir que este tipo de equipo se pueda volver a añadir
+                         addedEquipmentTypes.delete(tipoValue);
+                         // Si deshabilitaste la opción en el select principal, vuelve a habilitarla
+                         // tipoEquipoSelect.querySelector(`option[value="${tipoValue}"]`).disabled = false;
+
+                         // Recalcular y mostrar el costo después de eliminar
+                         updateEstimatedCostDisplay();
+                     });
+
+                    // Añadimos el botón de eliminar al grupo principal, fuera del flex container
+                    newGroup.appendChild(removeButton);
+
+
+                    // Agregar el nuevo grupo completo al contenedor en la página
+                    equiposSeleccionadosContainer.appendChild(newGroup);
+
+                    // Marcar este tipo de equipo como añadido (para evitar duplicar el selector de TIPO)
+                    addedEquipmentTypes.add(tipoValue);
+
+                    // Opcional: resetear el select principal o deshabilitar la opción seleccionada
+                    tipoEquipoSelect.selectedIndex = 0; // Resetea la selección
+
+                    // Recalcular y mostrar el costo inicial al añadir un nuevo grupo de equipo
+                    updateEstimatedCostDisplay();
+
+
+                } else if (addedEquipmentTypes.has(tipoValue)) {
+                    alert(`El selector para '${tipoText}' ya ha sido añadido.`);
+                    tipoEquipoSelect.selectedIndex = 0;
+                } else {
+                    // Si no se seleccionó nada (value es "")
+                     alert('Por favor, seleccione un tipo de equipo para añadir.');
+                }
+            });
+
+            // --- Función para actualizar el display del Costo Total Estimado ---
+            function updateEstimatedCostDisplay() {
+                let totalCost = 0;
+
+                // 1. Sumar el costo base del tipo de evento principal
+                const tipoEventoSelect = document.getElementById('tipoEvento');
+                const selectedEventType = tipoEventoSelect.value;
+                totalCost += simulatedBaseEventCosts[selectedEventType] || 0; // Suma costo base si existe
+
+
+                // 2. Sumar el costo de cada equipo específico seleccionado con su cantidad
+                // Iteramos sobre CADA grupo de selector/cantidad que hemos añadido dinámicamente
+                const dynamicEquipmentGroups = equiposSeleccionadosContainer.querySelectorAll('.equipo-selector-group');
+
+                dynamicEquipmentGroups.forEach(group => {
+                    const selectElement = group.querySelector('.equipo-select');
+                    const quantityElement = group.querySelector('.quantity-input');
+
+                    // Asegurarse de que haya una selección válida en el select y una cantidad válida
+                    if (selectElement && selectElement.value !== "" && quantityElement && parseInt(quantityElement.value, 10) > 0) {
+                        // Obtener la opción seleccionada
+                        const selectedOption = selectElement.options[selectElement.selectedIndex];
+                        // Obtener el costo por unidad del data attribute (simulado)
+                        const costPerUnit = parseFloat(selectedOption.dataset.costPerUnit) || 0;
+                        const quantity = parseInt(quantityElement.value, 10);
+
+                        // Sumar el costo de esta selección * cantidad al total
+                        totalCost += costPerUnit * quantity;
+                    }
+                    // Nota: Si el select está vacío o la cantidad es 0, no suma nada para ese grupo.
+                });
+
+
+                // 3. Actualizar el campo de "Costo Total Estimado"
+                costoTotalInput.value = `$ ${totalCost.toFixed(2)}`;
+            }
+
+            // --- Evento 'submit' del formulario para proceder al pago ---
+            const eventoForm = document.getElementById('eventoForm');
+
+            eventoForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevenir el envío normal del formulario
+
+                // Validar campos obligatorios (ya lo hicimos, pero lo repetimos por seguridad)
+                const tipoEvento = document.getElementById('tipoEvento').value;
+                const fechaInicio = document.getElementById('fechaInicio').value;
+                const fechaFin = document.getElementById('fechaFin').value;
+                const localizacion = document.getElementById('localizacion').value;
+
+                if (!tipoEvento || !fechaInicio || !fechaFin || !localizacion) {
+                     alert('Por favor, complete todos los campos obligatorios.');
+                     return;
+                }
+
+                // Validar que los selectores dinámicos y las cantidades requeridas estén llenos
+                 const dynamicGroups = equiposSeleccionadosContainer.querySelectorAll('.equipo-selector-group');
+                 for (const group of dynamicGroups) {
+                     const selectElement = group.querySelector('.equipo-select');
+                     const quantityElement = group.querySelector('.quantity-input');
+
+                     if (selectElement.required && selectElement.value === "") {
+                         alert(`Por favor, seleccione un equipo específico en el campo '${group.querySelector('label').textContent.replace('Seleccionar ', '').replace(':', '').trim()}'.`);
+                         selectElement.focus();
+                         return;
+                     }
+                      if (quantityElement.required && (quantityElement.value === "" || parseInt(quantityElement.value, 10) <= 0)) {
+                         alert(`Por favor, ingrese una cantidad válida para el equipo '${selectElement.options[selectElement.selectedIndex].text}'.`);
+                         quantityElement.focus();
+                         return;
+                     }
+                 }
+
+
+                // Recopilar los datos del evento para pasar a la pantalla de pago
+                // En una app real, enviarías estos datos al backend para registrar el evento como 'pendiente'
+                const eventData = {
+                     tipo: tipoEvento,
+                     fechaInicio: fechaInicio,
+                     fechaFin: fechaFin,
+                     localizacion: localizacion,
+                     // Recopilar datos de los selectores de equipo añadidos dinámicamente, incluyendo la cantidad
+                     equiposSeleccionados: Array.from(dynamicGroups).map(group => {
+                         const selectElement = group.querySelector('.equipo-select');
+                         const quantityElement = group.querySelector('.quantity-input');
+                         const tipo = group.dataset.tipo; // e.g., 'sonido'
+
+                         return {
+                             tipo: tipo, // Tipo general (sonido, iluminacion)
+                             recursoId: selectElement.value, // ID del recurso específico
+                             recursoNombre: selectElement.options[selectElement.selectedIndex].text, // Nombre del recurso
+                             cantidad: parseInt(quantityElement.value, 10) // Cantidad seleccionada
+                         };
+                     }),
+                     // Obtener el costo final mostrado (simulado)
+                     costo: parseFloat(costoTotalInput.value.replace('$', '').trim())
+                     // Otros datos si son necesarios para el backend...
+                };
+
+                console.log('Datos del evento para pago:', eventData); // Log para verificar los datos
+
+                // Guardar los datos del evento (incluyendo el costo calculado) en sessionStorage
+                 sessionStorage.setItem('pendingEventData', JSON.stringify(eventData));
+
+                // Redirigir a la pantalla de pago
+                window.location.href = 'pago.html';
+            });
+
+            // --- Asegurarse de que el costo se muestre inicialmente ---
+            // Podrías llamar a updateEstimatedCostDisplay() aquí si tuvieras valores iniciales,
+            // pero como la pantalla empieza vacía (sin equipos añadidos), el costo inicial es el costo base del evento (0 si no se ha seleccionado tipo).
+            // El costo se recalcula automáticamente al añadir equipos o cambiar selección/cantidad.
+
+             // También puedes añadir un listener al selector de tipo de evento principal
+             // para que recalcule el costo base al cambiarlo
+             document.getElementById('tipoEvento').addEventListener('change', updateEstimatedCostDisplay);
+             // Llama una vez al inicio para mostrar el costo base del tipo de evento si ya está seleccionado
+             updateEstimatedCostDisplay();
+
+
+             // --- Configurar el botón de regresar fijo ---
+             // Nota: Como el botón fijo ya tiene el onclick en el HTML, no necesitamos JS adicional para él.
+
+        });
+    </script>
+</body>
+</html>

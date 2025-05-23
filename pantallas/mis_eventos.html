@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Eventos</title>
+    <style>
+         /* --- Código CSS base (reutilizado del anterior) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
+            text-align: center;
+             /* Añadir padding para que el contenido no quede detrás del botón fijo */
+             padding-top: 60px; /* Espacio para el botón fijo arriba */
+             padding-left: 60px; /* Espacio para el botón fijo a la izquierda */
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .login-container { /* Reutilizamos esta clase */
+            background-color: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 450px;
+            max-width: 90%;
+            box-sizing: border-box;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420;
+            font-size: 24px;
+            font-weight: light;
+        }
+
+        /* --- Estilos para la lista de eventos --- */
+        #eventListContainer {
+            margin-top: 30px;
+            /* Este contenedor se llenará con JS */
+        }
+
+        .event-card {
+            background-color: rgba(30, 30, 30, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+            border: 1px solid #444444;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-card .event-details p {
+            margin: 8px 0;
+            color: #cccccc;
+            font-size: 15px;
+            word-wrap: break-word; /* Asegura que el texto largo se ajuste */
+        }
+
+         .event-card .event-details p strong {
+            color: #f0c420;
+            display: inline-block;
+            min-width: 100px;
+            margin-right: 10px;
+            vertical-align: top; /* Alinea la etiqueta con el inicio del texto si es largo */
+        }
+
+        .event-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1;
+        }
+
+        .event-status.pending {
+            background-color: #f0c420;
+            color: #1a1a1a;
+        }
+
+        .event-status.confirmed {
+            background-color: #5cb85c;
+            color: white;
+        }
+
+        .no-events-message {
+            color: #cccccc;
+            font-size: 1.1em;
+            text-align: center;
+            margin-top: 20px;
+            /* Oculto por defecto, JS lo mostrará si no hay eventos */
+            display: none;
+        }
+
+        /* --- Estilos para el contenedor de botones --- */
+        .button-container {
+            display: flex;
+            justify-content: center;
+             gap: 15px;
+            margin-top: 30px;
+        }
+
+        .button-container button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-sizing: border-box;
+            min-width: 180px;
+            display: inline-block;
+        }
+
+        .button-container .secondary-button {
+            background-color: #555555;
+            color: #ffffff;
+        }
+
+        .button-container .secondary-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+        .button-container .primary-button {
+            background-color: #f0c420;
+            color: #1a1a1a;
+        }
+
+        .button-container .primary-button:hover {
+            background-color: #ffdb4f;
+            opacity: 0.9;
+        }
+
+        /* --- Estilo para el botón "Regresar" fijo --- */
+         .fixed-back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #555555;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            z-index: 1000;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .fixed-back-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+        /* Media query básico para ajustar en pantallas pequeñas */
+        @media (max-width: 600px) {
+            .fixed-back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+             body {
+                padding-top: 40px;
+                 padding-left: 40px;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <button type="button" class="fixed-back-button" onclick="window.location.href='main.html'">
+        Regresar
+    </button>
+
+    <div class="login-container">
+        <h1>Mis Eventos</h1>
+
+        <div id="eventListContainer">
+            </div>
+
+        <div class="no-events-message">Aún no tienes eventos agendados.</div>
+
+
+        <div class="button-container">
+             <button type="button" class="primary-button" onclick="window.location.href='agendar_evento.html'">Agendar Nuevo Evento</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Código JavaScript para cargar y mostrar los eventos ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const eventListContainer = document.getElementById('eventListContainer');
+            const noEventsMessage = document.querySelector('.no-events-message');
+
+            // --- SIMULACIÓN DE DATOS DE LA BASE DE DATOS ---
+            // En una aplicación real, aquí harías una llamada a tu API de backend
+            // para obtener los eventos del usuario. Ejemplo con fetch:
+            /*
+            fetch('/api/mis-eventos') // Reemplaza con la URL de tu API
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json(); // Asume que la API retorna JSON
+                })
+                .then(eventos => {
+                    // Llama a la función para mostrar los eventos
+                    displayEvents(eventos);
+                })
+                .catch(error => {
+                    console.error('Error al cargar los eventos:', error);
+                    // Mostrar un mensaje de error al usuario
+                    noEventsMessage.textContent = 'Error al cargar los eventos.';
+                    noEventsMessage.style.display = 'block';
+                });
+            */
+
+            // --- DATOS DE EJEMPLO (ELIMINA O COMENTA ESTO CUANDO USES TU API REAL) ---
+            const eventosDeEjemplo = [
+                {
+                    id: 1,
+                    tipo: 'Conferencia',
+                    fechaInicio: '2024-12-01',
+                    fechaFin: '2024-12-03',
+                    localizacion: 'Centro de Convenciones Principal',
+                    equipos: 'Sonido (Mezcladora), Pantalla (Proyector)', // Podría ser un array en datos reales
+                    costoTotal: 1500.00,
+                    status: 'pending' // 'pending' o 'confirmed'
+                },
+                {
+                    id: 2,
+                    tipo: 'Reunión',
+                    fechaInicio: '2024-11-20',
+                    fechaFin: '2024-11-20',
+                    localizacion: 'Sala de reuniones B',
+                    equipos: 'Ninguno',
+                    costoTotal: 50.00,
+                    status: 'confirmed'
+                },
+                 {
+                    id: 3,
+                    tipo: 'Taller',
+                    fechaInicio: '2025-01-10',
+                    fechaFin: '2025-01-10',
+                    localizacion: 'Aula 3',
+                    equipos: 'N/A',
+                    costoTotal: 200.00,
+                    status: 'confirmed'
+                },
+                 // Añade más eventos de ejemplo aquí si quieres ver cómo se desplazan
+                 // { id: 4, tipo: 'Presentación', fechaInicio: '2025-02-15', fechaFin: '2025-02-15', localizacion: 'Auditorio Pequeño', equipos: 'Pantalla (Monitor)', costoTotal: 300.00, status: 'pending' },
+                 // { id: 5, tipo: 'Evento Social', fechaInicio: '2025-03-01', fechaFin: '2025-03-01', localizacion: 'Salón de Eventos', equipos: 'Sonido (Altavoces, Micrófonos), Iluminación (Focos LED)', costoTotal: 800.00, status: 'confirmed' }
+            ];
+
+            // Llama a la función para mostrar los eventos con los datos de ejemplo
+            displayEvents(eventosDeEjemplo);
+            // --- FIN DATOS DE EJEMPLO ---
+
+
+            // Función para mostrar los eventos en la página
+            function displayEvents(eventos) {
+                // Limpiar el contenedor actual
+                eventListContainer.innerHTML = '';
+
+                if (!eventos || eventos.length === 0) {
+                    // Mostrar mensaje si no hay eventos
+                    noEventsMessage.style.display = 'block';
+                } else {
+                    // Ocultar mensaje si hay eventos
+                    noEventsMessage.style.display = 'none';
+
+                    // Recorrer los eventos y crear las tarjetas
+                    eventos.forEach(evento => {
+                        const eventCard = document.createElement('div');
+                        eventCard.classList.add('event-card');
+
+                        const eventDetails = document.createElement('div');
+                        eventDetails.classList.add('event-details');
+
+                        // Añadir detalles del evento
+                        eventDetails.innerHTML = `
+                            <p><strong>Tipo:</strong> ${evento.tipo}</p>
+                            <p><strong>Fecha Inicio:</strong> ${evento.fechaInicio}</p>
+                            <p><strong>Fecha Fin:</strong> ${evento.fechaFin}</p>
+                            <p><strong>Localización:</strong> ${evento.localizacion}</p>
+                            <p><strong>Equipos:</strong> ${evento.equipos || 'N/A'}</p> <p><strong>Costo Total:</strong> $ ${evento.costoTotal ? evento.costoTotal.toFixed(2) : '0.00'}</p>
+                        `;
+
+                        // Añadir el indicador de estado
+                        const eventStatus = document.createElement('div');
+                        eventStatus.classList.add('event-status');
+                        // Añadir clase 'pending' o 'confirmed' basado en el estado del dato
+                        eventStatus.classList.add(evento.status);
+                        eventStatus.textContent = evento.status === 'pending' ? 'Pendiente' : 'Confirmado';
+
+                        // Añadir detalles y estado a la tarjeta
+                        eventCard.appendChild(eventDetails);
+                        eventCard.appendChild(eventStatus);
+
+                        // Añadir la tarjeta al contenedor en la página
+                        eventListContainer.appendChild(eventCard);
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

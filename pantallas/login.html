@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonido 57</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más limpia */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f); /* Tonos de negro y amarillo */
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff; /* Texto blanco */
+            text-align: center;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .login-container {
+            background-color: rgba(15, 15, 15, 0.9); /* Fondo oscuro semi-transparente */
+            padding: 40px; /* Más padding para un look más espacioso */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 450px; /* <<-- ANCHO DEL CONTENEDOR AUMENTADO */
+            max-width: 90%; /* Ajuste en pantallas pequeñas */
+            box-sizing: border-box; /* Incluir padding y borde en el ancho */
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420; /* Amarillo */
+            font-size: 24px;
+            font-weight: light; /* Fuente más ligera */
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left; /* Alinear etiquetas a la izquierda */
+        }
+
+        .input-group label {
+            display: block; /* Etiquetas en su propia línea */
+            margin-bottom: 8px;
+            color: #cccccc; /* Color de etiqueta más suave */
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555555; /* Borde sutil */
+            border-radius: 4px;
+            background-color: #333333; /* Fondo de input oscuro */
+            color: #ffffff; /* Texto blanco en el input */
+            box-sizing: border-box; /* Incluir padding y borde en el ancho */
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #f0c420; /* Resaltar con amarillo al enfocar */
+            box-shadow: 0 0 5px rgba(240, 196, 32, 0.5);
+        }
+
+        .button-container {
+            display: flex; /* Activa Flexbox */
+            justify-content: space-between; /* Espacio entre los botones */
+            gap: 15px; /* Espacio entre los botones */
+            margin-top: 30px;
+        }
+
+        .button-container button {
+            flex-grow: 1; /* <<-- ESTA PROPIEDAD HACE QUE CREZCAN POR IGUAL Y TENGAN EL MISMO TAMAÑO */
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        /* Estilos específicos para el primer y último botón (según el orden en el HTML) */
+        .button-container button:first-child { /* Botón Registrarse */
+             background-color: #555555;
+             color: #ffffff;
+         }
+
+         .button-container button:first-child:hover {
+             background-color: #777777;
+             opacity: 0.9;
+         }
+
+         .button-container button:last-child { /* Botón Iniciar Sesión */
+             background-color: #f0c420;
+             color: #1a1a1a;
+         }
+
+         .button-container button:last-child:hover {
+             background-color: #ffdb4f;
+             opacity: 0.9;
+         }
+
+        .forgot-password {
+            display: block;
+            margin-top: 20px;
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            text-align: center;
+        }
+
+        .forgot-password:hover {
+            color: #f0c420;
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>¿Desea agendar un evento?</h1>
+        <form action="#" method="post">
+            <div class="input-group">
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </div>
+            <div class="input-group">
+                <label for="clave">Clave:</label>
+                <input type="password" id="clave" name="clave" required>
+            </div>
+            <div class="button-container">
+                <button type="button" onclick="window.location.href='reg.html'">Registrarse</button>
+                <button type="submit">Iniciar Sesión</button>
+            </div>
+            <a href="verificacion_usuario.html" class="forgot-password">¿Olvidó su contraseña?</a>
+        </form>
+    </div>
+</body>
+</html>

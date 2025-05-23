@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Sonido 57</title>
+    <style>
+        /* --- Código CSS base (reutilizado) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Reutilizamos el contenedor principal */
+        .login-container {
+            background-color: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            /* Ajustamos el ancho para el panel de administración */
+            width: 350px;
+            max-width: 90%;
+            box-sizing: border-box;
+            text-align: center; /* Centramos el contenido en el admin panel */
+        }
+
+        /* Estilo para el título del panel */
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420;
+            font-size: 28px;
+            font-weight: light;
+            text-align: center;
+        }
+
+        /* --- Estilos específicos para las opciones del administrador --- */
+        .admin-options ul {
+            list-style: none; /* Elimina los puntos de lista */
+            padding: 0; /* Elimina el padding por defecto de la lista */
+            margin: 0; /* Elimina el margen por defecto */
+        }
+
+        .admin-options li {
+            margin-bottom: 15px; /* Espacio entre cada opción */
+        }
+
+        .admin-options li:last-child {
+             margin-bottom: 0; /* Elimina el margen inferior del último elemento */
+        }
+
+
+        .admin-options a {
+            display: block; /* Hace que el enlace ocupe todo el ancho disponible */
+            padding: 15px 20px; /* Padding interno del botón/enlace */
+            background-color: #f0c420; /* Color de fondo (amarillo) */
+            color: #1a1a1a; /* Color del texto (negro) */
+            text-decoration: none; /* Elimina el subrayado del enlace */
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .admin-options a:hover {
+            background-color: #ffdb4f;
+            opacity: 0.9;
+        }
+        
+        /* Opcional: estilo para un botón de "Cerrar Sesión Admin" */
+        .logout-button {
+            display: block;
+            margin-top: 30px;
+            padding: 10px 15px;
+            background-color: #555555; /* Color secundario */
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="login-container"> <h1>Panel de Administración</h1>
+
+        <div class="admin-options">
+            <ul>
+                <li><a href="inventario.html">Gestión de Inventario</a></li>
+                <li><a href="gestion_eventos.html">Gestión de Eventos</a></li>
+                <li><a href="pagos.html">Gestión de Pagos</a></li>
+            </ul>
+        </div>
+
+        <a href="login.html" class="logout-button">Cerrar Sesión Admin</a>
+
+    </div>
+
+</body>
+</html>

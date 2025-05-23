@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realizar Pago</title>
+    <style>
+         /* --- Código CSS base (reutilizado de las otras pantallas) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #ffffff;
+            text-align: center;
+             /* Añadir padding para que el contenido no quede detrás del botón fijo */
+             padding-top: 60px; /* Espacio para el botón fijo arriba */
+             padding-left: 60px; /* Espacio para el botón fijo a la izquierda */
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .login-container { /* Reutilizamos esta clase */
+            background-color: rgba(15, 15, 15, 0.9);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+            width: 450px;
+            max-width: 90%;
+            box-sizing: border-box;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #f0c420;
+            font-size: 24px;
+            font-weight: light;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cccccc;
+            font-size: 14px;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="date"],
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555555;
+            border-radius: 4px;
+            background-color: #333333;
+            color: #ffffff;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .input-group input[disabled] {
+             background-color: #222222;
+             color: #aaaaaa;
+             cursor: not-allowed;
+             border-color: #444444;
+        }
+
+        /* --- Estilos para la sección de Pago --- */
+        .payment-info {
+            background-color: rgba(30, 30, 30, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+            border: 1px solid #444444;
+        }
+
+        .payment-info h3 {
+            margin-top: 0;
+            color: #f0c420;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: normal;
+        }
+
+        .payment-info p {
+            margin: 8px 0;
+            color: #cccccc;
+            font-size: 15px;
+        }
+
+        .payment-info p strong {
+             color: #ffffff; /* Etiquetas de datos de pago en blanco */
+             display: inline-block;
+             min-width: 100px; /* Ancho mínimo para alinear */
+             margin-right: 10px;
+              vertical-align: top; /* Alinea con el texto si es largo */
+        }
+
+        #amountToPay {
+             color: #f0c420; /* Color del monto a pagar */
+             font-size: 1.4em; /* Tamaño de fuente más grande */
+             font-weight: bold;
+             margin-bottom: 20px;
+             text-align: center; /* Centra el monto */
+        }
+
+
+        /* --- Estilos para el contenedor de botones --- */
+        .button-container {
+            display: flex;
+            justify-content: center;
+             gap: 15px;
+            margin-top: 30px;
+        }
+
+        .button-container button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-sizing: border-box;
+            min-width: 180px;
+            display: inline-block;
+        }
+
+        .button-container .secondary-button {
+            background-color: #555555;
+            color: #ffffff;
+        }
+
+        .button-container .secondary-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+        .button-container .primary-button {
+            background-color: #f0c420;
+            color: #1a1a1a;
+        }
+
+        .button-container .primary-button:hover {
+            background-color: #ffdb4f;
+            opacity: 0.9;
+        }
+
+        /* --- Estilo para el botón "Regresar" fijo --- */
+         .fixed-back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #555555;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            z-index: 1000;
+            transition: background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .fixed-back-button:hover {
+            background-color: #777777;
+            opacity: 0.9;
+        }
+
+        /* Media query básico para ajustar en pantallas pequeñas */
+        @media (max-width: 600px) {
+            .fixed-back-button {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+             body {
+                padding-top: 40px;
+                 padding-left: 40px;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <button type="button" class="fixed-back-button" onclick="window.location.href='event.html'">
+        Regresar
+    </button>
+
+    <div class="login-container">
+        <h1>Realizar Pago</h1>
+
+        <div class="input-group">
+             <label>Monto a Pagar:</label>
+             <div id="amountToPay">$ 0.00</div> </div>
+
+
+        <div class="payment-info">
+            <h3>Datos para Pago Móvil</h3>
+            <p><strong>Banco:</strong> Banco A</p>
+            <p><strong>Cédula/RIF:</strong> V-12345678</p>
+            <p><strong>Teléfono:</strong> 04XX-1234567</p>
+            <p style="margin-top: 15px; border-top: 1px dashed #444; padding-top: 10px;">
+                 <strong>Banco:</strong> Banco B</p>
+            <p><strong>Cédula/RIF:</strong> J-98765432</p>
+            <p><strong>Teléfono:</strong> 04YY-7654321</p>
+            </div>
+
+        <div class="input-group">
+            <label for="paymentReference">Referencia de Pago:</label>
+            <input type="text" id="paymentReference" name="paymentReference" placeholder="Ingrese la referencia aquí" required>
+        </div>
+
+        <div class="button-container">
+            <button type="button" class="primary-button" id="verifyPaymentButton">Verificar Pago</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Código JavaScript para la pantalla de Pago ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const amountToPayElement = document.getElementById('amountToPay');
+            const paymentReferenceInput = document.getElementById('paymentReference');
+            const verifyPaymentButton = document.getElementById('verifyPaymentButton');
+
+            // 1. Leer el monto a pagar de sessionStorage
+            const eventCost = sessionStorage.getItem('eventCost');
+            const pendingEventData = sessionStorage.getItem('pendingEventData'); // Opcional: leer otros datos del evento
+
+            if (eventCost) {
+                amountToPayElement.textContent = `$ ${parseFloat(eventCost).toFixed(2)}`;
+            } else {
+                // Si no hay costo guardado, mostrar un mensaje o redirigir
+                amountToPayElement.textContent = 'Monto no disponible';
+                console.warn('No se encontró el costo del evento en sessionStorage.');
+                // Opcional: Redirigir al inicio o a la pantalla de agendar si el costo no está
+                // alert('Error: No se pudo determinar el monto del evento.');
+                // window.location.href = 'agendar_evento.html';
+            }
+
+            // 2. Añadir event listener al botón "Verificar Pago"
+            verifyPaymentButton.addEventListener('click', function() {
+                const reference = paymentReferenceInput.value.trim();
+
+                if (reference === '') {
+                    alert('Por favor, ingrese la referencia de pago.');
+                    return; // Detener si el campo está vacío
+                }
+
+                // --- SIMULACIÓN DEL PROCESO DE VERIFICACIÓN ---
+                // En una aplicación real, aquí enviarías la referencia, el monto y el ID del evento (si lo tienes)
+                // a tu backend para que verifique el pago contra los registros de la empresa y la base de datos.
+                console.log(`Intentando verificar pago con referencia: ${reference}`);
+                console.log(`Monto esperado: ${amountToPayElement.textContent}`);
+                // Si guardaste pendingEventData, podrías enviarlo también
+                // console.log('Datos del evento pendiente:', JSON.parse(pendingEventData));
+
+
+                // 3. Mostrar mensaje emergente "evento registrado, espera tu verificación"
+                alert("Evento registrado, espera tu verificación");
+
+                // 4. Opcional: Limpiar el campo o redirigir después del mensaje
+                paymentReferenceInput.value = ''; // Limpiar campo de referencia
+                // Deshabilitar el botón para evitar envíos duplicados (en un flujo real)
+                // verifyPaymentButton.disabled = true;
+
+                // SIMULACIÓN: Redirigir a la pantalla de "Mis Eventos" después de un breve retraso
+                // En un flujo real, la redirección podría ocurrir después de que el backend confirme la recepción
+                // de la solicitud de verificación.
+                setTimeout(() => {
+                    window.location.href = 'mis_eventos.html'; // Redirigir a la pantalla de mis eventos
+                }, 500); // Espera 0.5 segundos antes de redirigir
+
+                // Eliminar los datos temporales de sessionStorage después de usarlos (opcional, pero buena práctica)
+                // sessionStorage.removeItem('eventCost');
+                // sessionStorage.removeItem('pendingEventData'); // Si también lo guardaste
+            });
+
+             // --- Configurar el botón de regresar fijo ---
+             // Nota: Como el botón fijo ya tiene el onclick en el HTML, no necesitamos JS adicional para él.
+             // Pero si su comportamiento fuera más complejo, lo añadiríamos aquí.
+        });
+    </script>
+
+</body>
+</html>

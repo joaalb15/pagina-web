@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Registro de Usuario</title>
+   <style>
+    body {
+        margin: 0;
+        padding: 20px; /* Añadido padding para evitar que el contenido toque los bordes en pantallas muy pequeñas */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(270deg, #0a0a0a, #1a1a1a, #f0c420, #f0db4f);
+        background-size: 400% 400%;
+        animation: gradientAnimation 15s ease infinite;
+        color: #ffffff;
+        text-align: center;
+        box-sizing: border-box; /* Asegura que el padding no afecte el min-height */
+    }
+
+    @keyframes gradientAnimation {
+        0% {
+        background-position: 0% 50%;
+        }
+        50% {
+        background-position: 100% 50%;
+        }
+        100% {
+        background-position: 0% 50%;
+        }
+    }
+
+        .register-container { /* Cambiado el nombre de la clase para mayor claridad */
+        background-color: rgba(15, 15, 15, 0.9);
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.6);
+        width: 350px; /* Un poco más ancho para campos adicionales */
+        max-width: 95%; /* Ajuste en pantallas pequeñas */
+        box-sizing: border-box;
+        text-align: left; /* Alinea el contenido del formulario a la izquierda */
+        }
+
+        h1 {
+        margin-top: 0;
+        margin-bottom: 30px;
+        color: #f0c420;
+        font-size: 28px; /* Título ligeramente más grande para la pantalla de registro */
+        font-weight: light;
+         text-align: center; /* Centra el título */
+         }
+
+        .input-group {
+        margin-bottom: 20px;
+        }
+
+        .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #cccccc;
+        font-size: 14px;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"],
+        .input-group input[type="email"],   
+        .input-group input[type="tel"] { /* Selectores para los diferentes tipos de input */
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #555555;
+        border-radius: 4px;
+        background-color: #333333;
+        color: #ffffff;
+        box-sizing: border-box;
+        font-size: 16px;
+        }
+
+        .input-group input[type="text"]:focus,
+        .input-group input[type="password"]:focus,
+        .input-group input[type="email"]:focus,
+        .input-group input[type="tel"]:focus {
+        outline: none;
+        border-color: #f0c420;
+         box-shadow: 0 0 5px rgba(240, 196, 32, 0.5);
+        }
+
+
+        .checkbox-group {
+        margin-bottom: 20px;
+        display: flex; /* Usa flexbox para alinear checkbox y label */
+        align-items: center; /* Centra verticalmente */
+        gap: 8px; /* Espacio entre el checkbox y el label */
+        color: #cccccc;
+        font-size: 14px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+        /* Puedes añadir estilos personalizados si deseas, pero los por defecto suelen ser suficientes */
+        transform: scale(1.2); /* Aumenta ligeramente el tamaño del checkbox */
+        }
+    
+        .checkbox-group label {
+        margin-bottom: 0; /* Elimina el margen inferior de la etiqueta en este grupo */
+        cursor: pointer; /* Indica que es clickeable */
+        }
+
+
+        .button-container {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column; /* Botones apilados */
+        gap: 15px; /* Espacio entre los botones apilados */
+        }
+
+        .button-container button {
+        padding: 12px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease, opacity 0.3s ease;
+        text-transform: uppercase;
+        font-weight: bold;
+        width: 100%; /* Botones ocupan todo el ancho */
+        }
+
+        .button-container button[type="submit"] { /* Botón Registrarse */
+        background-color: #f0c420;
+        color: #1a1a1a;
+        }
+
+        .button-container button[type="submit"]:hover {
+        background-color: #ffdb4f;
+        opacity: 0.9;
+            }
+            .back-to-login {
+            display: block; /* Como un bloque para que esté en su propia línea */
+            margin-top: 20px;
+            color: #cccccc;
+            text-decoration: none; /* Sin subrayado por defecto */
+            font-size: 14px;
+            transition: color 0.3s ease;
+            text-align: center; /* Centra el enlace */
+            }
+
+        .back-to-login:hover {
+            color: #f0c420; /* Cambia color al pasar el ratón */
+            text-decoration: underline; /* Añade subrayado al pasar el ratón */
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+    <h1>Registro de Usuario</h1>
+    <form action="#" method="post">
+
+            <div class="input-group">
+            <label for="reg-nombre">Nombre:</label>
+            <input type="text" id="reg-nombre" name="nombre" required>
+            </div>
+            <div class="input-group">
+            <label for="reg-apellido">Apellido:</label>
+            <input type="text" id="reg-apellido" name="apellido" required>
+            </div>
+                    <div class="input-group">
+                <label for="reg-usuario">Usuario:</label>
+                <input type="text" id="reg-usuario" name="usuario" required>
+            </div>
+            <div class="input-group">
+            <label for="reg-clave">Clave:</label>
+            <input type="password" id="reg-clave" name="clave" required>
+            </div>
+            <div class="input-group">
+            <label for="reg-correo">Correo Electrónico:</label>
+            <input type="email" id="reg-correo" name="correo" required>
+            </div>
+            <div class="input-group">
+                <label for="reg-celular">Número Celular:</label>
+                <input type="tel" id="reg-celular" name="celular" required pattern="[0-9]{10,15}"> <small style="color: #cccccc; font-size: 12px;">Formato: solo números, entre 10 y 15 dígitos.</small>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="mayor-edad" name="mayor_edad" required> <label for="mayor-edad">Soy mayor de edad</label>
+            </div>
+
+            <div class="button-container">
+                <button type="submit">Registrarse</button>
+            </div>
+        </form>
+        <a href="login.html" class="back-to-login">¿Ya tienes cuenta? Iniciar Sesión</a> </div>
+</body>
+</html>
